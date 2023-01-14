@@ -3,7 +3,8 @@
 compiler_test_monitor_files/*
 tree.dot
 CFGs.dot
-compiler 
-interpreter
+
+
 example/compiler_test_monitor_files/*
 template_project/compiler_test_monitor_files/*
+template_project/compiler
