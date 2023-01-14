@@ -46,6 +46,10 @@ temp_dotfiles_valid_dir="${temp_dotfiles_dir}valid/"
 temp_dotfiles_grammar_dir="${temp_dotfiles_dir}grammar/"
 temp_dotfiles_semantic_dir="${temp_dotfiles_dir}semantic/"
 
+#Global variables
+tree_dotfile_is_created="true"
+CFGs_dotfile_is_created="true"
+
 declare -a test_to_run_arr
 test_counter=0
 for arg in "$@"
@@ -610,7 +614,7 @@ Example: ./run_tests.sh my_compiler -4 -5 -c\n\
 
         done 
 
-        output_recorder "\n\nFinal Status:\n\t$allTestSucceeded\n${NO_COL}";
+        output_recorder "\n\nFinal Status:\n\t$allTestSucceeded\n${NO_COL}";        
 
     else
         output_recorder "\nRunning following testcases: $runningTestCases\n"
@@ -684,7 +688,7 @@ Example: ./run_tests.sh my_compiler -4 -5 -c\n\
                     fi; 
                 done 
                 if [[ "$failed_one_test" == "false" ]]; then
-                    output_recorder "\n${DARKGREEN}All Semantic Test succeeded!!${NO_COL}"
+                    output_recorder "\n${DARKGREEN}All Invalid Semantic Test succeeded!!${NO_COL}"
                 fi; 
             else 
                 output_recorder "\n\nNo Invalid semantic tests in the $test_invalid_semantic_path path, add some .java files to test them. " ;
@@ -698,6 +702,18 @@ Example: ./run_tests.sh my_compiler -4 -5 -c\n\
             output_recorder "\nyou must update the cache, do this by running the script with the -j flag! \n${NO_COL}"
         fi; 
 
+    fi;
+
+    if [[ ${tree_dotfile_is_created} == "false"   ]];then
+        output_recorder "\t${YELLOW}Compiler does not generate a \"tree.dot\" file! \n${NO_COL}";
+    fi;
+
+    if [[ "${CFGs_dotfile_is_created}" == "false" ]];then            
+        output_recorder "\t${YELLOW}Compiler does not generate a \"CFGs.dot\" file! \n${NO_COL}";
+    fi;
+
+    if [[ "${tree_dotfile_is_created}" == "false" || "${CFGs_dotfile_is_created}" == "false" ]];then            
+        output_recorder "\t${YELLOW}The dot-files are used to create the graphs. \n${NO_COL}";
     fi;
 
     if [[ "$flag_noMenu" == "false" ]]; 
@@ -859,12 +875,20 @@ run_validTest() {
             test_succeeded="true"
             if [[ "$flag_onlyTrees" == "true" ]]; then
             
-                cp tree.dot $temp_dotfiles_valid_dir$filename.dot
-                cp CFGs.dot $temp_dotfiles_valid_dir$filename"(_CFGs)".dot                 
-                            
-                dot -Tpdf $temp_dotfiles_valid_dir$filename.dot -o${test_suit_root}trees/$filename.pdf &
-                dot -Tpdf $temp_dotfiles_valid_dir$filename"(_CFGs)".dot -o${test_suit_root}trees/$filename"(_CFGs)".pdf &
+                if [[ -f "tree.dot"  ]];then
+                    cp tree.dot $temp_dotfiles_valid_dir$filename.dot
+                    dot -Tpdf $temp_dotfiles_valid_dir$filename.dot -o${test_suit_root}trees/$filename.pdf &
+                else
+                    tree_dotfile_is_created="false"
+                fi;
 
+                if [[ -f "CFGs.dot" ]];then
+                    cp CFGs.dot $temp_dotfiles_valid_dir$filename"(_CFGs)".dot     
+                    dot -Tpdf $temp_dotfiles_valid_dir$filename"(_CFGs)".dot -o${test_suit_root}trees/$filename"(_CFGs)".pdf &
+                else
+                    CFGs_dotfile_is_created="false"
+                fi;
+   
             fi;
             
             if [[ "$flag_onlyErrors" == "false" ]];then
@@ -897,12 +921,21 @@ run_validTest() {
         
         if [[ $runtimeErrorCode == 3 ]]; then
 
-            filename=$(printf $1 | sed -En 's#.*\/([^/]+)$#\1#p')                
-            cp tree.dot $temp_dotfiles_valid_dir$filename.dot
-            cp CFGs.dot $temp_dotfiles_valid_dir$filename"(_CFGs)".dot                 
-                        
-            dot -Tpdf $temp_dotfiles_valid_dir$filename.dot -o${test_suit_root}trees/$filename.pdf &
-            dot -Tpdf $temp_dotfiles_valid_dir$filename"(_CFGs)".dot -o${test_suit_root}trees/$filename"(_CFGs)".pdf &
+            filename=$(printf $1 | sed -En 's#.*\/([^/]+)$#\1#p')      
+
+            if [[ -f "tree.dot"  ]];then
+                cp tree.dot $temp_dotfiles_valid_dir$filename.dot
+                dot -Tpdf $temp_dotfiles_valid_dir$filename.dot -o${test_suit_root}trees/$filename.pdf &
+            else
+                tree_dotfile_is_created="false"
+            fi;
+
+            if [[ -f "CFGs.dot" ]];then
+                cp CFGs.dot $temp_dotfiles_valid_dir$filename"(_CFGs)".dot     
+                dot -Tpdf $temp_dotfiles_valid_dir$filename"(_CFGs)".dot -o${test_suit_root}trees/$filename"(_CFGs)".pdf &
+            else
+                CFGs_dotfile_is_created="false"
+            fi;                      
 
             output_recorder "${YELLOW}\n[$id_file]FAILED:\t${NO_COL}";
             if [[ "$flag_fullPath" == "true" ]];
@@ -961,12 +994,21 @@ run_validTest() {
         test_succeeded="true"
         
         if [[ "$flag_onlyErrors" == "false" ]];then
-            filename=$(printf $1 | sed -En 's#.*\/([^/]+)$#\1#p')                
-            cp tree.dot $temp_dotfiles_valid_dir$filename.dot
-            cp CFGs.dot $temp_dotfiles_valid_dir$filename"(_CFGs)".dot                 
-                        
-            dot -Tpdf $temp_dotfiles_valid_dir$filename.dot -o${test_suit_root}trees/$filename.pdf &
-            dot -Tpdf $temp_dotfiles_valid_dir$filename"(_CFGs)".dot -o${test_suit_root}trees/$filename"(_CFGs)".pdf &
+            filename=$(printf $1 | sed -En 's#.*\/([^/]+)$#\1#p')           
+
+            if [[ -f "tree.dot"  ]];then
+                cp tree.dot $temp_dotfiles_valid_dir$filename.dot
+                dot -Tpdf $temp_dotfiles_valid_dir$filename.dot -o${test_suit_root}trees/$filename.pdf &
+            else
+                tree_dotfile_is_created="false"
+            fi;
+
+            if [[ -f "CFGs.dot" ]];then
+                cp CFGs.dot $temp_dotfiles_valid_dir$filename"(_CFGs)".dot     
+                dot -Tpdf $temp_dotfiles_valid_dir$filename"(_CFGs)".dot -o${test_suit_root}trees/$filename"(_CFGs)".pdf &
+            else
+                CFGs_dotfile_is_created="false"
+            fi;
        
             output_recorder "\n${GREEN}[$id_file]SUCCESS: \t${NO_COL}";
 
@@ -1052,11 +1094,19 @@ run_validTest() {
     if [[ $runtimeErrorCode == 3 ]]; then
 
         filename=$(printf $1 | sed -En 's#.*\/([^/]+)$#\1#p')   
-        cp tree.dot $temp_dotfiles_valid_dir$filename.dot
-        cp CFGs.dot $temp_dotfiles_valid_dir$filename"(_CFGs)".dot                 
-                    
-        dot -Tpdf $temp_dotfiles_valid_dir$filename.dot -o${test_suit_root}trees/$filename.pdf &
-        dot -Tpdf $temp_dotfiles_valid_dir$filename"(_CFGs)".dot -o${test_suit_root}trees/$filename"(_CFGs)".pdf &
+        if [[ -f "tree.dot"  ]];then
+            cp tree.dot $temp_dotfiles_valid_dir$filename.dot
+            dot -Tpdf $temp_dotfiles_valid_dir$filename.dot -o${test_suit_root}trees/$filename.pdf &
+        else
+            tree_dotfile_is_created="false"
+        fi;
+
+        if [[ -f "CFGs.dot" ]];then
+            cp CFGs.dot $temp_dotfiles_valid_dir$filename"(_CFGs)".dot     
+            dot -Tpdf $temp_dotfiles_valid_dir$filename"(_CFGs)".dot -o${test_suit_root}trees/$filename"(_CFGs)".pdf &
+        else
+            CFGs_dotfile_is_created="false"
+        fi;
 
         output_recorder "${YELLOW}\n[$id_file]FAILED:\t${NO_COL}";
         if [[ "$flag_fullPath" == "true" ]];
@@ -1281,12 +1331,21 @@ run_invalidSemanticTest() {
         if [[ $runtimeErrorCode == 3 ]]; then
 
             if [[ "$flag_onlyTrees" == "true" ]]; then
-                         
-                cp tree.dot $temp_dotfiles_semantic_dir$filename.dot
-                cp CFGs.dot $temp_dotfiles_semantic_dir$filename"(_CFGs)".dot                 
-                            
-                dot -Tpdf $temp_dotfiles_semantic_dir$filename.dot -o${test_suit_root}trees/invalid/semantic/$filename.pdf &
-                dot -Tpdf $temp_dotfiles_semantic_dir$filename"(_CFGs)".dot -o${test_suit_root}trees/invalid/semantic/$filename"(_CFGs)".pdf &
+
+                if [[ -f "tree.dot"  ]];then
+                    cp tree.dot $temp_dotfiles_semantic_dir$filename.dot
+                    dot -Tpdf $temp_dotfiles_semantic_dir$filename.dot -o${test_suit_root}trees/invalid/semantic/$filename.pdf &
+                else
+                    tree_dotfile_is_created="false"
+                fi;
+
+                if [[ -f "CFGs.dot" ]];then
+                    cp CFGs.dot $temp_dotfiles_semantic_dir$filename"(_CFGs)".dot    
+                    dot -Tpdf $temp_dotfiles_semantic_dir$filename"(_CFGs)".dot -o${test_suit_root}trees/invalid/semantic/$filename"(_CFGs)".pdf &
+                else
+                    CFGs_dotfile_is_created="false"
+                fi;
+                
             fi;
 
             #output_recorder "\n${GREEN}  ↳SEMANTIC ERROR($runtimeErrorCode)${NO_COL}" "$semantic_output"
@@ -1316,12 +1375,21 @@ run_invalidSemanticTest() {
                 strBuffer+="\t[$id_file]  $filename";
             fi;        
       
-            filename=$(printf $1 | sed -En 's#.*\/([^/]+)$#\1#p')                
-            cp tree.dot $temp_dotfiles_semantic_dir$filename.dot
-            cp CFGs.dot $temp_dotfiles_semantic_dir$filename"(_CFGs)".dot                 
-                        
-            dot -Tpdf $temp_dotfiles_semantic_dir$filename.dot -o${test_suit_root}trees/invalid/semantic/$filename.pdf &
-            dot -Tpdf $temp_dotfiles_semantic_dir$filename"(_CFGs)".dot -o${test_suit_root}trees/invalid/semantic/$filename"(_CFGs)".pdf &
+            filename=$(printf $1 | sed -En 's#.*\/([^/]+)$#\1#p')         
+
+            if [[ -f "tree.dot"  ]];then
+                cp tree.dot $temp_dotfiles_semantic_dir$filename.dot
+                dot -Tpdf $temp_dotfiles_semantic_dir$filename.dot -o${test_suit_root}trees/invalid/semantic/$filename.pdf &
+            else
+                tree_dotfile_is_created="false"
+            fi;
+
+            if [[ -f "CFGs.dot" ]];then
+                cp CFGs.dot $temp_dotfiles_semantic_dir$filename"(_CFGs)".dot    
+                dot -Tpdf $temp_dotfiles_semantic_dir$filename"(_CFGs)".dot -o${test_suit_root}trees/invalid/semantic/$filename"(_CFGs)".pdf &
+            else
+                CFGs_dotfile_is_created="false"
+            fi;
     
         fi;
         print_semantic_error_lines "$1" \
