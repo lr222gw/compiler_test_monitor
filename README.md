@@ -1,8 +1,6 @@
 
 # compiler_test_monitor
 
-${\color{red}\textsf{Please  use branch "base\\_project", it is the most updated}}$
-
 **First draft of readme, feel free to ask for improvements. This was rushed together...**
 
 
