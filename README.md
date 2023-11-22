@@ -5,6 +5,7 @@ ${\color{red}\textsf{Please  use branch "base\\_project", it is the most updated
 
 **First draft of readme, feel free to ask for improvements. This was rushed together...**
 
+
 ## overview
 A bash script made to make testing your own compiler easier.
 Initially made for mini java byte code compiler, with support for testing an interpreter aswell.
@@ -50,7 +51,6 @@ See the Template project to get a better idea of what is required...
 
 ## Demo gif
 ![Shows how to run the example.](compiler_test_demo.gif)
-
 ## Regarding the Example
 ### Compiler errors on sample tests
 When running the example you will see that the file TreeVisitor fails. 
