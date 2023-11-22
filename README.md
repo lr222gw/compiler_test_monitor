@@ -1,8 +1,10 @@
+
 # compiler_test_monitor
 
-*Please use branch "base_project", it is the most updated*
+${\color{red}\textsf{Please  use branch "base\\_project", it is the most updated}}$
 
-**First draft of readme**
+**First draft of readme, feel free to ask for improvements. This was rushed together...**
+
 
 ## overview
 A bash script made to make testing your own compiler easier.
@@ -36,8 +38,7 @@ All test can only exist of one file... Sadly
 Lazy instructions for the example and/or template:
 1. Download repo
 2. Cd into the example folder
-3. Run script: ../run_tests.sh
-3,5. wait for the folder structure to be created.
+3. Run script: `../run_tests.sh`. Wait for the folder structure to be created.
 4. Add mini java test files to the subfolders of test within the newly constructed compiler_test_monitor_files folder.
 5. Run the script again.
 
@@ -48,6 +49,8 @@ There needs to be two rules named compiler and interpreter.
 
 See the Template project to get a better idea of what is required...
 
+## Demo gif
+![Shows how to run the example.](compiler_test_demo.gif)
 ## Regarding the Example
 ### Compiler errors on sample tests
 When running the example you will see that the file TreeVisitor fails. 

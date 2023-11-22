@@ -1,3 +1,10 @@
  
 # Ignore generated files 
-compiler_test_monitor/*
+compiler_test_monitor_files/*
+tree.dot
+CFGs.dot
+
+
+example/compiler_test_monitor_files/*
+template_project/compiler_test_monitor_files/*
+template_project/compiler
